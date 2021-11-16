@@ -1,0 +1,30 @@
+
+@api = http://localhost:4000
+
+### Get videos collection
+GET {{api}}/videos
+
+### Get video by ID
+GET {{api}}/videos/6192b2d0d750e22c602eac1a
+
+### Create a video
+POST {{api}}/videos
+Content-Type: application/json
+
+{
+    "url": "https://www.youtube.com/watch?v=qwfE7fSVaZM",
+    "title": "fazt video",
+    "description": "this is a mern tutorial"
+}
+
+### Delete video by ID
+DELETE {{api}}/videos/1
+
+### Update video by ID
+PUT {{api}}/videos/6192b2d0d750e22c602eac1a
+Content-Type: application/json
+
+{
+    "title": "freeCodeCamp node tutorial",
+    "description": "this is a node&express tutorial"
+}

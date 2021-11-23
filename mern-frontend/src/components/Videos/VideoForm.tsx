@@ -1,16 +1,25 @@
-import React, { ChangeEvent, FormEvent, useState } from "react";
+import React, { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import * as videoService from "./VideoService";
-import { Video } from "./Video";
 import { toast } from "react-toastify";
+import { Video } from "./Video";
+import { useNavigate, useParams } from "react-router-dom";
+import { title } from "process";
 
 type InputChange = ChangeEvent<HTMLInputElement | HTMLTextAreaElement>;
 
 const VideoForm = () => {
-  const [video, setVideo] = useState<Video>({
+  const navigate = useNavigate();
+  const params = useParams() as {
+    id: string;
+  };
+
+  const initialState = {
     title: "",
     description: "",
     url: "",
-  });
+  };
+
+  const [video, setVideo] = useState<Video>(initialState);
 
   const handleInputChange = (e: InputChange) => {
     setVideo({ ...video, [e.target.name]: e.target.value });
@@ -18,9 +27,26 @@ const VideoForm = () => {
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const res = await videoService.createVideo(video);
-    toast.success("New video added");
+
+    if (!params.id) {
+      await videoService.createVideo(video);
+      toast.success("New video added");
+    }
+    await videoService.updateVideo(params.id, video);
+
+    //setVideo(initialState);
+    navigate("/");
   };
+
+  const getVideo = async (id: string) => {
+    const res = await videoService.getVideoById(id);
+    const { title, description, url } = res.data;
+    setVideo({ title, description, url });
+  };
+
+  useEffect(() => {
+    if (params.id) getVideo(params.id);
+  }, []);
 
   return (
     <div className="row">
@@ -28,15 +54,16 @@ const VideoForm = () => {
         <div className="card">
           <div className="card-body">
             <h3 className="card-title text-center mb-3">New Video</h3>
-            <form onSubmit={() => handleSubmit}>
+            <form onSubmit={handleSubmit}>
               <div className="form-group mb-3">
                 <input
                   type="text"
                   name="title"
                   placeholder="write a title"
                   className="form-control"
+                  value={video.title}
                   autoFocus
-                  onChange={() => handleInputChange}
+                  onChange={handleInputChange}
                 />
               </div>
               <div className="form-group mb-3">
@@ -45,7 +72,8 @@ const VideoForm = () => {
                   name="url"
                   placeholder="https://some-url.example"
                   className="form-control"
-                  onChange={() => handleInputChange}
+                  value={video.url}
+                  onChange={handleInputChange}
                 />
               </div>
               <div className="form-group mb-3">
@@ -54,10 +82,15 @@ const VideoForm = () => {
                   rows={3}
                   className="form-control"
                   placeholder="write a description"
-                  onChange={() => handleInputChange}
+                  value={video.description}
+                  onChange={handleInputChange}
                 ></textarea>
               </div>
-              <button className="btn btn-primary">Create video</button>
+              {params.id ? (
+                <button className="btn btn-info">Update video</button>
+              ) : (
+                <button className="btn btn-primary">Create video</button>
+              )}
             </form>
           </div>
         </div>

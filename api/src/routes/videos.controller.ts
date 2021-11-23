@@ -1,10 +1,10 @@
-import { RequestHandler } from "express";
+import { Response, RequestHandler } from "express";
 import Video from "./Video";
 
 export const createVideo: RequestHandler = async (req, res) => {
   const videoFound = await Video.findOne({ url: req.body.url });
   if (videoFound) {
-    return res.status(301).json({ message: "The URL already exists" });
+    return res.status(303).json({ message: "The URL already exists" });
   }
   const video = new Video(req.body);
   const savedVideo = await video.save();
@@ -20,7 +20,7 @@ export const getVideos: RequestHandler = async (req, res) => {
   }
 };
 
-export const getVideo: RequestHandler = async (req, res) => {
+export const getVideo: RequestHandler = async (req, res): Promise<Response> => {
   const videoFound = await Video.findById(req.params.id);
   if (!videoFound) return res.status(204).json({ message: "Video not found" });
   return res.json(videoFound);
@@ -38,5 +38,5 @@ export const updateVideo: RequestHandler = async (req, res) => {
   });
   if (!updatedVideo)
     return res.status(204).json({ message: "Video not found" });
-  res.json(updatedVideo);
+  return res.json(updatedVideo);
 };

@@ -3,11 +3,12 @@ import ReactDOM from "react-dom";
 import reportWebVitals from "./reportWebVitals";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
-import VideoList from "./components/Videos/VideoList";
-import VideoForm from "./components/Videos/VideoForm";
+import "react-toastify/dist/ReactToastify.css";
 import "bootswatch/dist/pulse/bootstrap.min.css";
 import "./index.css";
 import Navbar from "./components/Navbar/Navbar";
+import VideoList from "./components/Videos/VideoList";
+import VideoForm from "./components/Videos/VideoForm";
 
 ReactDOM.render(
   <React.StrictMode>
@@ -17,6 +18,7 @@ ReactDOM.render(
         <Routes>
           <Route path="/" element={<VideoList />} />
           <Route path="/new-video" element={<VideoForm />} />
+          <Route path="/update/:id" element={<VideoForm />} />
         </Routes>
         <ToastContainer />
       </div>
